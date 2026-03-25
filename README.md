@@ -62,32 +62,98 @@ In the `POST /persons` endpoint, you are sending user input to an LLM.
 
 ---
 
-## 🧰 Local development (run the server)
+## 🧰 Local Development
 
-### Prereqs
-- Java: JDK **11+** (this project targets Java 11 bytecode; it runs fine on JDK 17 on my machine).
-- macOS/Linux: use the included Gradle wrapper `./gradlew`.
+### Prerequisites
+- **Java:** JDK 11+ (tested with JDK 17)
+- **PostgreSQL:** Version 14+ running locally
+- **Ollama:** Local LLM runtime (no API key needed)
 
-### Run tests
+### Setup
+
+1. **Install Ollama (macOS):**
+   ```bash
+   brew install ollama
+   brew services start ollama
+   
+   # Pull the phi3 model (2.2GB, fast and efficient)
+   ollama pull phi3:mini
+   ```
+
+2. **Configure Database:**
+   ```bash
+   # Start PostgreSQL (if using Homebrew on macOS)
+   brew services start postgresql@14
+   
+   # Create database
+   createdb persons_finder
+   ```
+
+3. **Run the Server:**
+   ```bash
+   ./run.sh
+   ```
+
+   Server starts on **http://localhost:8080**
+
+4. **Test the API:**
+   ```bash
+   # Create a person (with AI-generated bio using Ollama)
+   curl -X POST http://localhost:8080/api/v1/persons \
+     -H "Content-Type: application/json" \
+     -d '{
+       "name": "John Smith",
+       "jobTitle": "Software Engineer",
+       "hobbies": ["coding", "gaming", "hiking"],
+       "location": {"latitude": -41.2865, "longitude": 174.7762}
+     }'
+   # Returns: 1 (the person's ID)
+   
+   # Find nearby persons (Wellington, NZ coordinates, 50km radius)
+   curl "http://localhost:8080/api/v1/persons/nearby?id=1&radius=50"
+   
+   # Get person names by IDs
+   curl "http://localhost:8080/api/v1/persons?ids=1&ids=2"
+   # Returns: {"1":"John Smith","2":"Jane Doe"}
+   
+   # Update person location
+   curl -X PUT "http://localhost:8080/api/v1/persons/1/location?longitude=174.8&latitude=-41.3"
+   ```
+
+### Run Tests
 ```bash
 ./gradlew test
 ```
 
-### Start the server
+### Automated API Testing
 ```bash
-./gradlew bootRun
+# Smoke test all endpoints
+./test_api.sh
 ```
 
-By default, it starts on **http://localhost:8080**.
-
-### Quick sanity check
-In a second terminal:
+### Seed 1 Million Records (Performance Testing)
 ```bash
-curl http://localhost:8080/api/v1/persons
+# Populates database with 1M persons using mock bios (no AI calls)
+./seed_database.sh
 ```
+This takes 2-5 minutes and creates a spatial index for optimized queries.
 
-### Stopping
-Press `Ctrl+C` in the terminal running `bootRun`.
+### Stopping the Server
+Press `Ctrl+C` in the terminal running `./run.sh`
+
+---
+
+## 🤖 Why Ollama Instead of Gemini?
+
+**Privacy-First Design:**
+- ✅ All LLM processing happens **locally** on your machine
+- ✅ No API keys to manage or rotate
+- ✅ No user data sent to third-party services
+- ✅ Perfect for high-security applications (banking, healthcare)
+- ✅ Zero cost, unlimited usage
+
+**For Production:**
+If deploying to production, you can switch to cloud APIs by modifying `BioGeneratorService.kt` to use Gemini, OpenAI, or Azure OpenAI.
 
 ## ✅ Getting Started
 

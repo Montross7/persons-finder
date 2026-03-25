@@ -1,21 +1,23 @@
 #!/bin/bash
-# Run this script to start the server with environment variables
 
-# Load environment variables from .env file
+# Load environment variables from .env file (optional now)
 if [ -f .env ]; then
     export $(cat .env | grep -v '^#' | xargs)
-    echo "✓ Loaded environment variables from .env"
-else
-    echo "⚠ Warning: .env file not found. Copy .env.example to .env and add your API key."
-    exit 1
 fi
 
-# Check if GEMINI_API_KEY is set
-if [ -z "$GEMINI_API_KEY" ]; then
-    echo "❌ Error: GEMINI_API_KEY is not set in .env file"
-    exit 1
+echo "🚀 Starting Persons Finder API..."
+echo "📍 Server will be available at http://localhost:8080"
+echo ""
+
+# Check if Ollama is running
+echo "Checking Ollama service..."
+if ! curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
+    echo "⚠️  Ollama not running. Starting it now..."
+    brew services start ollama
+    sleep 3
 fi
 
-echo "✓ GEMINI_API_KEY is configured"
-echo "Starting Spring Boot application..."
+echo "✅ Ollama ready"
+echo ""
+
 ./gradlew bootRun

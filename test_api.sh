@@ -66,7 +66,7 @@ echo ""
 
 # Test 7: Non-existent person
 echo "❌ Test 7: Non-existent person (should return 404)"
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL?ids=999999")
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL?ids=99999999999999")
 if [ "$HTTP_CODE" = "404" ]; then
     echo -e "${GREEN}✅ Error handling working - returned 404${NC}"
 else

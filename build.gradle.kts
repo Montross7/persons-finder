@@ -22,6 +22,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	
+	// Swagger/OpenAPI
+	implementation("org.springdoc:springdoc-openapi-ui:1.6.9")
+	
 	// Database drivers
 	implementation("org.postgresql:postgresql")
 	runtimeOnly("com.h2database:h2:2.1.212")

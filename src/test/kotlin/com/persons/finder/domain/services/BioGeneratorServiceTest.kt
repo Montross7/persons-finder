@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 
 @SpringBootTest
-@TestPropertySource(properties = ["gemini.api.key=test_key_for_testing"])
 class BioGeneratorServiceTest {
 
     @Autowired
@@ -25,7 +24,7 @@ class BioGeneratorServiceTest {
         // Assert
         assertNotNull(bio)
         assertTrue(bio.isNotBlank(), "Bio should not be blank")
-        // Note: With real API, this would call Gemini; in test context may return error or mock response
+        // With Ollama running locally, this generates a real bio
     }
 
     @Test

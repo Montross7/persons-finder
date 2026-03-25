@@ -32,6 +32,18 @@ interface PersonRepository : JpaRepository<Person, Long> {
                     * sin(radians(latitude))
                 )
             )
+        """,
+        countQuery = """
+            SELECT COUNT(*) FROM person 
+            WHERE (
+                6371 * acos(
+                    cos(radians(:queryLatitude)) 
+                    * cos(radians(latitude)) 
+                    * cos(radians(longitude) - radians(:queryLongitude)) 
+                    + sin(radians(:queryLatitude)) 
+                    * sin(radians(latitude))
+                )
+            ) <= :radiusKm and id != :id
         """
     )
     fun findNearby(
