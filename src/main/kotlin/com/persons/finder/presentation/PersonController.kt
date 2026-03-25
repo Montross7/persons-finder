@@ -21,7 +21,7 @@ class PersonController @Autowired constructor(
      */
     @PutMapping("{id}/location")
     fun updateLocation(
-        @RequestParam("id") id: Long,
+        @PathVariable id: Long,
         @RequestParam("longitude") longitude: Double,
         @RequestParam("latitude") latitude: Double
     ): String {
