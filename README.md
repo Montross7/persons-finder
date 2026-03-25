@@ -78,13 +78,12 @@ In the `POST /persons` endpoint, you are sending user input to an LLM.
 ./gradlew bootRun
 ```
 
-By default it starts on **http://localhost:8080**.
+By default, it starts on **http://localhost:8080**.
 
 ### Quick sanity check
 In a second terminal:
 ```bash
 curl http://localhost:8080/api/v1/persons
-# -> Hello Example
 ```
 
 ### Stopping
