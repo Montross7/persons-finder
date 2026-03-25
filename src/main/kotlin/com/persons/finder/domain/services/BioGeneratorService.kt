@@ -37,6 +37,7 @@ class BioGeneratorService(
                 .bodyToMono<GeminiResponse>()
                 .block()
 
+
             val generatedText = response?.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
                 ?: "A mysterious person with interesting hobbies."
 

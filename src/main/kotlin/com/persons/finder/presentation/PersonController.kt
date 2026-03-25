@@ -1,19 +1,27 @@
 package com.persons.finder.presentation
 
 import com.persons.finder.data.Person
-import com.persons.finder.domain.services.BioGeneratorService
 import com.persons.finder.domain.services.PersonsService
 import com.persons.finder.presentation.dto.CreatePersonRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
+import javax.validation.constraints.Max
+import javax.validation.constraints.Min
+import javax.validation.constraints.Positive
 
 @RestController
 @RequestMapping("api/v1/persons")
+@Validated
 class PersonController @Autowired constructor(
     private val personsService: PersonsService,
 ) {
-    private val logger = LoggerFactory.getLogger(BioGeneratorService::class.java)
+    private val logger = LoggerFactory.getLogger(PersonController::class.java)
 
     /*
         TODO PUT API to update/create someone's location using latitude and longitude
@@ -21,14 +29,12 @@ class PersonController @Autowired constructor(
      */
     @PutMapping("{id}/location")
     fun updateLocation(
-        @PathVariable id: Long,
-        @RequestParam("longitude") longitude: Double,
-        @RequestParam("latitude") latitude: Double
-    ): String {
-        personsService.updateLocation(
-            id, longitude, latitude
-        )
-        return "SUCCESS"
+        @PathVariable @Positive id: Long,
+        @RequestParam("longitude") @Min(-180) @Max(180) longitude: Double,
+        @RequestParam("latitude") @Min(-90) @Max(90) latitude: Double
+    ): ResponseEntity<Person> {
+        val updatedPerson = personsService.updateLocation(id, longitude, latitude)
+        return ResponseEntity.ok(updatedPerson)
     }
 
     /*
@@ -36,9 +42,9 @@ class PersonController @Autowired constructor(
         (JSON) Body and return the id of the created entity
     */
     @PostMapping("")
-    fun generateNewPerson(@RequestBody request: CreatePersonRequest): Long {
+    fun generateNewPerson(@Valid @RequestBody request: CreatePersonRequest): ResponseEntity<Long> {
         val response = personsService.save(request.name, request.jobTitle, request.hobbies, request.location)
-        return response.id
+        return ResponseEntity.status(HttpStatus.CREATED).body(response.id)
     }
 
     /*
@@ -49,10 +55,12 @@ class PersonController @Autowired constructor(
         // API would be called using John's id and a radius 10km
      */
     @GetMapping("nearby")
-    fun nearbyPersons(@RequestParam("id") id: Long, @RequestParam(value = "radius") radius: Double) : List<Person> {
-        logger.info("Fetching nearby persons for $id")
-        val personList = personsService.findAllAround(id, radius)
-        return personList
+    fun nearbyPersons(
+        @RequestParam("id") @Positive id: Long,
+        @RequestParam(value = "radius") @Min(value = 1, message = "Radius must be at least 1km") radius: Double
+    ): ResponseEntity<*> {
+        val personList = personsService.findAllAround(id, radius, PageRequest.of(0, 10))
+        return ResponseEntity.ok(personList)
     }
 
     /*
@@ -62,8 +70,11 @@ class PersonController @Autowired constructor(
         // API would be called using person or persons ids
      */
     @GetMapping("")
-    fun getPersonName(@RequestParam("ids") ids: List<Long>): String {
-        return "Test"
+    fun getPersonName(@RequestParam("ids") ids: List<Long>): ResponseEntity<Map<Long, String>> {
+        val personNames = ids.associate { id -> 
+            id to personsService.getById(id).name
+        }
+        return ResponseEntity.ok(personNames)
     }
 
 }
