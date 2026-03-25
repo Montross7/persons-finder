@@ -142,19 +142,6 @@ This takes 2-5 minutes and creates a spatial index for optimized queries.
 Press `Ctrl+C` in the terminal running `./run.sh`
 
 ---
-
-## 🤖 Why Ollama Instead of Gemini?
-
-**Privacy-First Design:**
-- ✅ All LLM processing happens **locally** on your machine
-- ✅ No API keys to manage or rotate
-- ✅ No user data sent to third-party services
-- ✅ Perfect for high-security applications (banking, healthcare)
-- ✅ Zero cost, unlimited usage
-
-**For Production:**
-If deploying to production, you can switch to cloud APIs by modifying `BioGeneratorService.kt` to use Gemini, OpenAI, or Azure OpenAI.
-
 ## ✅ Getting Started
 
 Clone this repo and push your solution to your own public repository.
