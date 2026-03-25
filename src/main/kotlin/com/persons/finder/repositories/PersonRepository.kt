@@ -11,15 +11,31 @@ interface PersonRepository : JpaRepository<Person, Long>{
     @Query(
         nativeQuery = true,
         value = """
-        SELECT p FROM Person p 
-        WHERE p.latitude BETWEEN :minLat AND :maxLat 
-        AND p.longitude BETWEEN :minLong AND :maxLong
+            SELECT * FROM person 
+            WHERE (
+                6371 * acos(
+                    cos(radians(:queryLatitude)) 
+                    * cos(radians(latitude)) 
+                    * cos(radians(longitude) - radians(:queryLongitude)) 
+                    + sin(radians(:queryLatitude)) 
+                    * sin(radians(latitude))
+                )
+            ) <= :radiusKm and id != :id
+            ORDER BY (
+                6371 * acos(
+                    cos(radians(:queryLatitude)) 
+                    * cos(radians(latitude)) 
+                    * cos(radians(longitude) - radians(:queryLongitude)) 
+                    + sin(radians(:queryLatitude)) 
+                    * sin(radians(latitude))
+                )
+            )
         """
     )
     fun findNearby(
-        @Param("minLat") minLat: Double,
-        @Param("maxLat") maxLat: Double,
-        @Param("minLong") minLong: Double,
-        @Param("maxLong") maxLong: Double,
-        ): List<Person>
+        @Param("queryLatitude") queryLatitude: Double,
+        @Param("queryLongitude") queryLongitude: Double,
+        @Param("radiusKm") radiusKm: Double,
+        @Param("id") id: Long
+    ): List<Person>
 }

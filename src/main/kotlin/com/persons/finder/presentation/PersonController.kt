@@ -1,8 +1,10 @@
 package com.persons.finder.presentation
 
 import com.persons.finder.data.Person
+import com.persons.finder.domain.services.BioGeneratorService
 import com.persons.finder.domain.services.PersonsService
 import com.persons.finder.presentation.dto.CreatePersonRequest
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*
 class PersonController @Autowired constructor(
     private val personsService: PersonsService,
 ) {
+    private val logger = LoggerFactory.getLogger(BioGeneratorService::class.java)
 
     /*
         TODO PUT API to update/create someone's location using latitude and longitude
@@ -47,6 +50,7 @@ class PersonController @Autowired constructor(
      */
     @GetMapping("nearby")
     fun nearbyPersons(@RequestParam("id") id: Long, @RequestParam(value = "radius") radius: Double) : List<Person> {
+        logger.info("Fetching nearby persons for $id")
         val personList = personsService.findAllAround(id, radius)
         return personList
     }

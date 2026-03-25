@@ -7,13 +7,13 @@ import javax.persistence.Id
 
 @Entity
 data class Person(
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long,
-    val name: String,
-    val bio: String,
-    val jobTitle: String,
-    val hobbies: String,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+    val name: String = "",
+    val bio: String = "",
+    val jobTitle: String = "",
+    val hobbies: String = "",
 
-    var latitude: Double,
-    var longitude: Double,
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
 )

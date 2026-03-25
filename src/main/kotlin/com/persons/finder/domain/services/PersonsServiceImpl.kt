@@ -42,9 +42,14 @@ class PersonsServiceImpl(
         id: Long,
         radius: Double
     ): List<Person> {
+
         val currentPerson = personRepository.findById(id).orElseThrow()
-        val minLatitude =
-        return personRepository.findNearby()
+        return personRepository.findNearby(
+            currentPerson.latitude,
+            currentPerson.longitude,
+            radius,
+            id
+        )
     }
 
 
