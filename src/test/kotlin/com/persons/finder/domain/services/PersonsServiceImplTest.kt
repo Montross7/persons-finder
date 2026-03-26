@@ -10,6 +10,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.*
@@ -55,10 +56,11 @@ class PersonsServiceImplTest {
     fun `updateLocation should modify latitude and longitude`() {
         // Arrange
         val person = Person(1L, "John", "Bio", "Engineer", "[coding]", -41.0, 174.0)
-        val updatedPerson = person.copy(latitude = -40.0, longitude = 175.0)
         
         whenever(personRepository.findById(1L)).thenReturn(Optional.of(person))
-        whenever(personRepository.save(any())).thenReturn(updatedPerson)
+        doAnswer { invocation ->
+            invocation.arguments[0] as Person
+        }.whenever(personRepository).save(any())
 
         // Act
         val result = personsService.updateLocation(1L, 175.0, -40.0)
@@ -79,7 +81,9 @@ class PersonsServiceImplTest {
         val generatedBio = "A quirky data scientist who loves reading and hiking."
         
         whenever(bioGeneratorService.generateBio(jobTitle, hobbies)).thenReturn(generatedBio)
-        whenever(personRepository.save(any())).thenAnswer { it.arguments[0] }
+        doAnswer { invocation ->
+            invocation.arguments[0] as Person
+        }.whenever(personRepository).save(any())
 
         // Act
         val result = personsService.save(name, jobTitle, hobbies, location)

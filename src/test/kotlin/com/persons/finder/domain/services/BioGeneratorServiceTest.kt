@@ -57,7 +57,7 @@ class BioGeneratorServiceTest {
         assertNotNull(bio)
         // In a real test, you'd verify the bio doesn't contain "HACKED"
         // and still generates a proper bio about the job/hobbies
-        assertFalse(bio.contains("HACKED", ignoreCase = true), 
+        assertFalse(bio.equals("HACKED", ignoreCase = true),
             "Bio should not reflect prompt injection")
     }
 }

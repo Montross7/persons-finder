@@ -6,7 +6,7 @@
 set -e
 
 DB_NAME="persons_finder"
-DB_USER="stuartburmeister"
+DB_USER="postgres"
 RECORDS=1000000
 
 echo "🌱 Seeding database with $RECORDS persons..."
